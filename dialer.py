@@ -24,12 +24,6 @@ keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
 lastKeysPressed = []
 offHook = True
 
-p = pyaudio.PyAudio()
-stream = p.open(format=pyaudio.paFloat32, channels=1, rate=44100, output = 1)
-play_dial_tone(stream,2);
-stream.close()
-p.terminate()
-
 def sine_wave(frequency, length, rate):
 	length = int(length*rate)
 	factor = float(frequency) * (math.pi * 2) /rate
@@ -98,3 +92,12 @@ while offHook:
 	elif (len(keys) == 0):
 		lastKeysPressed = []
 	time.sleep(0.1)
+
+if __name__ == '__main__':
+	p = pyaudio.PyAudio()
+	stream = p.open(format=pyaudio.paFloat32, channels=1, rate=44100, output = 1)
+	# play_dtmf_tone(stream, "8675309")
+	#play_tone(stream);
+	play_dial_tone(stream, 10)
+	stream.close()
+	p.terminate()
