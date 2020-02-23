@@ -2,8 +2,10 @@ import time
 import digitalio
 import board
 import adafruit_matrixkeypad
-import pyaudiotest2
 import pyaudio
+import math
+import numpy
+import sys
 
 # Membrane 3x4 matrix keypad on Raspberry Pi -
 # https://www.adafruit.com/product/419
@@ -24,9 +26,50 @@ offHook = True
 
 p = pyaudio.PyAudio()
 stream = p.open(format=pyaudio.paFloat32, channels=1, rate=44100, output = 1)
-pyaudiotest2.play_dial_tone(stream,2);
+play_dial_tone(stream,2);
 stream.close()
 p.terminate()
+
+def sine_wave(frequency, length, rate):
+	length = int(length*rate)
+	factor = float(frequency) * (math.pi * 2) /rate
+	return numpy.sin(numpy.arange(length) * factor)
+
+def sine_sine_wave(f1, f2, length, rate):
+	s1=sine_wave(f1,length,rate)
+	s2=sine_wave(f2,length,rate)
+	ss=s1+s2
+	sa=numpy.divide(ss, 2.0)
+	return sa
+
+def play_dial_tone(stream, length=1):
+	print('got here')
+	frames = []
+	frames.append(sine_sine_wave(440, 350, length, 44100))
+	chunk = numpy.concatenate(frames)*0.25
+	stream.write(chunk.astype(numpy.float32).tostring())
+
+
+def play_dtmf_tone(stream, digits, length=0.20, rate=44100):
+	dtmf_freqs = {'1': (1209,697), '2':(1336,697), '3': (1477,697), 'A': (1633,697), 
+		'4': (1209, 770), '5': (1336, 770), '6':(1477,770), 'B':(1633,770),
+		'7': (1209,852),'8':(1336,852),'9':(1477,852), 'C': (1633,852),
+		'*': (1209,941), '0':(1336,941), '#':(1477,941), 'D':(1633,941)}
+
+	dtmf_digits = ['1', '2', '3', '4','5','6','7','8','9','*','0','#','A','B','C','D']
+
+	if type(digits) is not type(''):
+		digits=str(digits)[0]
+	digits = ''.join([dd for dd in digits if dd in dtmf_digits])
+
+	for digit in digits:
+		digit=digit.upper()
+		frames=[]
+		frames.append(sine_sine_wave(dtmf_freqs[digit][0], dtmf_freqs[digit][1], length, rate))
+		chunk = numpy.concatenate(frames) * 0.25
+		stream.write(chunk.astype(numpy.float32).tostring())
+		time.sleep(0.2)
+
 
 def areEqual(arr1, arr2):
 	#print("array 1");
