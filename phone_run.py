@@ -25,6 +25,8 @@ keypad = adafruit_matrixkeypad.Matrix_Keypad(rows, cols, keys)
 lastKeysPressed = []
 offHook = True
 
+stream = p.open(format=pyaudio.paFloat32, channels=1, rate=44100, output = 1)
+p = pyaudio.PyAudio()
 
 def sine_wave(frequency, length, rate):
         length = int(length*rate)
@@ -88,12 +90,7 @@ def areEqual(arr1, arr2):
 		if(arr1[i] != arr2[i]):
 			return False;
 
-	
-
 if __name__ == '__main__':
-        stream = p.open(format=pyaudio.paFloat32, channels=1, rate=44100, output = 1)
-        p = pyaudio.PyAudio()
-        
         while offHook:
 	        keys = keypad.pressed_keys
 	        if (not areEqual(keys, lastKeysPressed) and len(keys) > 0):
