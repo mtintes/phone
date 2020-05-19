@@ -7,6 +7,7 @@ import sys
 import digitalio
 import board
 import adafruit_matrixkeypad
+import time
 
 # Membrane 3x4 matrix keypad on Raspberry Pi -
 # https://www.adafruit.com/product/419
