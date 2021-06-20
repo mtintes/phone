@@ -98,17 +98,26 @@ def areEqual(arr1, arr2):
 			return False;
 
 
+def stopPhone():
+        return True
+
+def jenny():
+        print("Jenny who can I turn to.")
+        return False
+
+def doNothing():
+        return False
 
 def numberLookup(phoneNumber):
-        number = ([str(elem) for elem in phoneNumber])
+        number = ''.join([str(elem) for elem in phoneNumber])
 
         switcher = {
                 "1111111": stopPhone,
                 "8675309": jenny
         } 
 
-        return switcher.get(number, lambda: "NONE")
-
+        print("Number", number)
+        return switcher.get(number, doNothing)
 
 if __name__ == '__main__':
         generator = ToneGenerator()
@@ -141,11 +150,12 @@ if __name__ == '__main__':
                         elif (len(keys) == 0):
                                 lastKeysPressed = [];
 
-                        elif (len(phoneNumber) >= 7):
+                        if (len(phoneNumber) == 7):
                                 play_dtmf_tone(stream, ''.join([str(elem) for elem in phoneNumber]))
                                 doThing = numberLookup(phoneNumber)
                                 exitapp = doThing()
-                        time.sleep(0.15)
+                                phoneNumber = []
+                        time.sleep(0.10)
 
 
                         # if(''.join([str(elem) for elem in phoneNumber]) == "1111111"):
@@ -156,7 +166,7 @@ if __name__ == '__main__':
                 #play_tone(stream);
                 # stream.write(play_dial_tone(stream, 5))
         except Exception as error:
-                print("error")
+                print(error)
         finally:
                 streamDialtone.stop_stream()
                 streamDialtone.close()
@@ -165,9 +175,3 @@ if __name__ == '__main__':
                 p.terminate()
 
 
-def stopPhone():
-        return True
-
-def jenny():
-        print("Jenny who can I turn to.")
-        return False
